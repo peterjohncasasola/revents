@@ -1,37 +1,37 @@
+import { NavLink } from "react-router";
 import { Container, Menu, MenuItem, Button } from "semantic-ui-react"
+import SignedOutMenu from "./SignedOutMenu";
+import SignedInMenu from "./SignedInMenu";
+import { useState } from "react";
+import { AppRoutes } from "@/app/router/AppRoutes";
 
 
-type Props = {
-  onCreateEvent: (value: boolean) => void;
-}
+function NavBar() {
 
-function NavBar({ onCreateEvent }: Props) {
-
-  function handleOpenForm() {
-    onCreateEvent(true);
-  }
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   return (
     <Menu inverted={true} fixed="top">
         <Container>
             <MenuItem header>
-            <img src="/logo.png" alt="logo" />
-            Re-events
+            <img src="/logo.png" alt="logo" style={{ marginRight: "10px" }}/>
+            Re-vents
             </MenuItem>
-            <MenuItem name="Events" />
+            <MenuItem name="Events" as={NavLink} to={AppRoutes.Events} />
             <MenuItem>
                 <Button 
-                  onClick={handleOpenForm} 
+                  as={NavLink} 
+                  to={AppRoutes.CreateEvent}
                   floated="right" 
                   positive={true} 
                   inverted={true} 
                   content="Create Event" 
                 />
             </MenuItem>
-            <MenuItem position="right">
-                <Button basic inverted content="Login" />
-                <Button basic inverted content="Register" style={{ marginLeft: '0.5em' }} />
-            </MenuItem>
+            {
+              isAuthenticated ? <SignedInMenu setAuthenticated={setIsAuthenticated} /> 
+              : <SignedOutMenu setAuthenticated={setIsAuthenticated} />
+            }
         </Container>
     </Menu>
   )

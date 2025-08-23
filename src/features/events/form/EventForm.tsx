@@ -1,49 +1,40 @@
-import { useState, type ChangeEvent } from "react";
-import { Button, Form, Header, Input, Segment, TextArea } from "semantic-ui-react";
-import { createId } from '@paralleldrive/cuid2';
+import { AppRoutes } from "@/app/router/AppRoutes";
 import type { AppEvent } from "@/types/event";
+import { useState, type ChangeEvent } from "react";
+import { useNavigate } from "react-router-dom";
+import { Button, Form, Header, Input, Segment, TextArea } from "semantic-ui-react";
 
-type Props = {
-  setIsFormOpen: (value: boolean) => void
-  addEvent: (event: AppEvent) => void
-  selectedEvent: AppEvent | null
-  updateEvent: (event: AppEvent) => void
-}
+export default function EventForm() {
 
-export default function EventForm({ setIsFormOpen, addEvent, selectedEvent, updateEvent }: Props) {
-
-    const initialValues = selectedEvent ?? { 
+    const initialValues : AppEvent = {
         id: '',
         title: '',
-        category: '',   
+        category: '',
         description: '',
         date: '',
         city: '',
         venue: '',
-        attendees: []
+        attendees: [],
+        hostedBy: "",
+        hostPhotoURL: ""
     };
 
-    const formTitle = selectedEvent ? 'Update Event' : 'Create New Event';
+    const formTitle = initialValues.id ? 'Update Event' : 'Create New Event';
 
     const [event, setEvent] = useState(initialValues);
+    const navigate = useNavigate();
 
     function handleSubmit() {
-        if (!selectedEvent) {
-            addEvent({...event, id: createId(), hostedBy: 'bob', attendees: [], hostPhotoURL: ''})
-        }
-        else {
-            // Update existing event
-            updateEvent({
-                ...event, id: selectedEvent.id,
-                hostedBy: selectedEvent.hostedBy || "bob",
-                hostPhotoURL: selectedEvent.hostPhotoURL || "",
-            });
-        }
     }
 
     function handleInputChange(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
         const { name, value } = e.target;
         setEvent((values) => ({ ...values, [name]: value }));
+    }
+
+    const handleCancel = () => {
+        setEvent(initialValues);
+        navigate(AppRoutes.Events);
     }
 
     return (
@@ -70,7 +61,7 @@ export default function EventForm({ setIsFormOpen, addEvent, selectedEvent, upda
                 </Form.Field>
 
                 <Button type="submit" floated="right" positive content='Submit' />
-                <Button type="button" onClick={() => setIsFormOpen(false)} floated="right" negative content='Cancel' />
+                <Button type="button" onClick={handleCancel} floated="right" negative content='Cancel' />
             </Form>
         </Segment>
     )
