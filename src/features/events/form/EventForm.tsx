@@ -1,12 +1,11 @@
 import { AppRoutes } from "@/app/router/AppRoutes";
 import type { AppEvent } from "@/types/event";
-import { useState, type ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
+  Divider,
   Form,
   Header,
-  Input,
   Segment,
   TextArea,
 } from "semantic-ui-react";
@@ -15,12 +14,15 @@ import { useAppDispatch, useAppSelector } from "@/app/store";
 import { useParams } from "react-router-dom";
 import { createEvent, updateEvent } from "../eventSlice";
 import { createId } from "@paralleldrive/cuid2";
+import { useForm, type FieldValues } from "react-hook-form";
 
 export default function EventForm() {
   const { id } = useParams();
   const dispatch = useAppDispatch();
   const selectedEvent = useAppSelector(selectEventById(id));
-  const initialValues: AppEvent = selectedEvent ?? {
+  const navigate = useNavigate();
+
+  const initialValues = {
     id: "",
     title: "",
     category: "",
@@ -33,19 +35,24 @@ export default function EventForm() {
     hostPhotoURL: "",
   };
 
-  const formTitle = initialValues.id ? "Update Event" : "Create New Event";
-  const action = initialValues.id ? "Update" : "Create";
+  const {
+    register,
+    handleSubmit: handleFormSubmit,
+    formState: { errors, isValid, isSubmitting },
+  } = useForm<AppEvent>({
+    defaultValues: selectedEvent ?? initialValues,
+    mode: "onTouched",
+  });
 
-  const [event, setEvent] = useState(initialValues);
-  const navigate = useNavigate();
+  const formTitle = id ? "Update Event" : "Create New Event";
 
-  const handleSubmit = () => {
+  const onSubmit = (data: FieldValues) => {
     const eventId = id ?? createId();
-    if (action === "Create") {
+    if (!id) {
       // Create new event
       dispatch(
         createEvent({
-          ...event,
+          ...data,
           id: eventId,
           hostedBy: "Bob",
           attendees: [],
@@ -54,89 +61,79 @@ export default function EventForm() {
       );
     } else {
       // Update existing event
-      dispatch(updateEvent({ ...selectedEvent, ...event }));
+      dispatch(updateEvent({ ...selectedEvent, ...data }));
     }
 
     navigate(AppRoutes.EventDetails(eventId));
   };
 
-  function handleInputChange(
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) {
-    const { name, value } = e.target;
-    setEvent((values) => ({ ...values, [name]: value }));
-  }
-
   const handleCancel = () => {
-    setEvent(initialValues);
     navigate(AppRoutes.Events);
   };
 
   return (
     <Segment clearing>
       <Header content={formTitle} />
-      <Form onSubmit={handleSubmit}>
-        <Form.Field>
-          <Input
-            placeholder="Event Title"
-            name="title"
-            value={event.title}
-            onChange={handleInputChange}
-            type="text"
-          />
-        </Form.Field>
-        <Form.Field>
-          <Input
-            placeholder="Category"
-            name="category"
-            value={event.category}
-            onChange={handleInputChange}
-            type="text"
-          />
-        </Form.Field>
-        <Form.Field>
-          <TextArea
-            placeholder="Description"
-            name="description"
-            value={event.description}
-            onChange={handleInputChange}
-            style={{ resize: "none" }}
-            rows={6}
-          />
-        </Form.Field>
-        <Form.Field>
-          <Input
-            placeholder="City"
-            name="city"
-            value={event.city}
-            onChange={handleInputChange}
-            type="text"
-          />
-        </Form.Field>
-        <Form.Field>
-          <Input
-            placeholder="Venue"
-            name="venue"
-            value={event.venue}
-            onChange={handleInputChange}
-            type="text"
-          />
-        </Form.Field>
-        <Form.Field>
-          <Input
-            placeholder="Date"
-            name="date"
-            value={event.date}
-            onChange={handleInputChange}
-            type="date"
-          />
-        </Form.Field>
+      <Divider />
 
-        <Button type="submit" floated="right" positive content="Submit" />
+      <Form onSubmit={handleFormSubmit(onSubmit)}>
+        <Header sub content="Event Details" color="teal" />
+        <Form.Input
+          fluid
+          placeholder="Event Title"
+          {...register("title", { required: "Title is required" })}
+          error={errors.title && errors.title.message}
+        />
+        <Form.Input
+          fluid
+          placeholder="Category"
+          {...register("category", { required: "Category is required" })}
+          error={errors.category && errors.category.message}
+        />
+        <Form.Field
+          control={TextArea}
+          placeholder="Description"
+          {...register("description", { required: "Description is required" })}
+          error={errors.description && errors.description.message}
+          style={{ resize: "none" }}
+          rows={6}
+        />
+        <Header sub content="Event Location Details" color="teal" />
+        <Form.Input
+          fluid
+          placeholder="City"
+          {...register("city", { required: "City is required" })}
+          error={errors.city && errors.city.message}
+        />
+        <Form.Input
+          fluid
+          placeholder="Venue"
+          {...register("venue", { required: "Venue is required" })}
+          error={errors.venue && errors.venue.message}
+        />
+        <Form.Input
+          fluid
+          type="date"
+          placeholder="Date"
+          {...register("date", { required: "Date is required" })}
+          error={errors.date && errors.date.message}
+        />
+
+        <Button
+          loading={isSubmitting}
+          disabled={!isValid}
+          type="submit"
+          icon="send"
+          floated="right"
+          positive
+          content="Submit"
+        />
         <Button
           type="button"
+          disabled={isSubmitting}
           onClick={handleCancel}
           floated="right"
+          icon="cancel"
           negative
           content="Cancel"
         />
