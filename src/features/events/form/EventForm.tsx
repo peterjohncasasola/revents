@@ -14,7 +14,8 @@ import { useAppDispatch, useAppSelector } from "@/app/store";
 import { useParams } from "react-router-dom";
 import { createEvent, updateEvent } from "../eventSlice";
 import { createId } from "@paralleldrive/cuid2";
-import { useForm, type FieldValues } from "react-hook-form";
+import { Controller, useForm, type FieldValues } from "react-hook-form";
+import { categoryOptions } from "./categoryOptions";
 
 export default function EventForm() {
   const { id } = useParams();
@@ -38,6 +39,7 @@ export default function EventForm() {
   const {
     register,
     handleSubmit: handleFormSubmit,
+    control,
     formState: { errors, isValid, isSubmitting },
   } = useForm<AppEvent>({
     defaultValues: selectedEvent ?? initialValues,
@@ -84,12 +86,22 @@ export default function EventForm() {
           {...register("title", { required: "Title is required" })}
           error={errors.title && errors.title.message}
         />
-        <Form.Input
-          fluid
-          placeholder="Category"
-          {...register("category", { required: "Category is required" })}
-          error={errors.category && errors.category.message}
+        <Controller
+          name="category"
+          control={control}
+          rules={{ required: "Category is required" }}
+          defaultValue={selectedEvent?.category || ""}
+          render={({ field }) => (
+            <Form.Select
+              placeholder="Category"
+              {...field}
+              onChange={(_, data) => field.onChange(data.value, { shouldValidate: true })}
+              options={categoryOptions}
+              error={errors.category && errors.category.message}
+            />
+          )}
         />
+        
         <Form.Field
           control={TextArea}
           placeholder="Description"
