@@ -1,0 +1,17 @@
+import eventSlice from "@/features/events/eventSlice"
+import testSlice  from "@/features/events/scratch/testSlice"
+import { configureStore } from "@reduxjs/toolkit"
+import { useDispatch, useSelector, type TypedUseSelectorHook } from "react-redux"   
+export const store = configureStore({
+    reducer: {
+        // Define your reducers here
+        test: testSlice.reducer,
+        events: eventSlice.reducer
+    }
+})
+
+export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = typeof store.dispatch
+
+export const useAppDispatch = () => useDispatch<AppDispatch>()
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector

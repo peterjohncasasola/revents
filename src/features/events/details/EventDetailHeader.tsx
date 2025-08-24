@@ -1,6 +1,13 @@
 import { Button, Header, Item, Segment, Image } from "semantic-ui-react";
+import { type AppEvent } from "@/types/event";
+import { Link } from "react-router-dom";
+import { AppRoutes } from "@/app/router/AppRoutes";
 
-export default function EventDetailHeader() {
+type Props= {
+  event: AppEvent
+}
+
+export default function EventDetailHeader({ event }: Props) {
 
   const eventImageStyle = {
     filter: "brightness(30%)",
@@ -20,7 +27,7 @@ export default function EventDetailHeader() {
   return (
     <Segment.Group>
       <Segment basic attached="top" style={{ padding: "0" }}>
-        <Image src={`/categoryImages/drinks.jpg`} fluid style={eventImageStyle} />
+        <Image src={`/categoryImages/${event.category}.jpg`} fluid style={eventImageStyle} />
 
         <Segment basic style={eventImageTextStyle}>
           <Item.Group>
@@ -28,12 +35,12 @@ export default function EventDetailHeader() {
               <Item.Content>
                 <Header
                   size="huge"
-                  content="Event Title"
+                  content={event.title}
                   style={{ color: "white" }}
                 />
-                <p>Event Date</p>
+                <p>{event.date}</p>
                 <p>
-                  Hosted by <strong>Bob</strong>
+                  Hosted by <strong>{event.hostedBy}</strong>
                 </p>
               </Item.Content>
             </Item>
@@ -45,7 +52,7 @@ export default function EventDetailHeader() {
         <Button size="tiny">Cancel My Place</Button>
         <Button size="tiny" color="teal">Join this Event</Button>
 
-        <Button color="orange" floated="right" size="tiny">
+        <Button color="orange" floated="right" size="tiny" as={Link} to={AppRoutes.ManageEvent(event.id)}>
           Manage Event
         </Button>
       </Segment>

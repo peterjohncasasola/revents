@@ -5,6 +5,7 @@ import EventDetailPage from "@/features/events/details/EventDetailPage"
 import HomePage from "@/features/events/home/HomePage"
 import EventForm from "@/features/events/form/EventForm"
 import { AppRoutes } from "./AppRoutes"
+import Scratch from "@/features/events/scratch/Scratch"
 
 export const router = createBrowserRouter([
     {
@@ -24,8 +25,12 @@ export const router = createBrowserRouter([
                 element: <EventForm />,
             },
             {
-                path: AppRoutes.EventDetails(),
+                path: AppRoutes.ManageEvent(),
                 element: <EventForm />,
+            },
+            {
+                path: AppRoutes.Scratch,
+                element: <Scratch />,
             },
             {
                 path: AppRoutes.Home,

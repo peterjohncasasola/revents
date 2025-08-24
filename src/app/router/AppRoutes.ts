@@ -1,7 +1,9 @@
 export const AppRoutes = {
-  Home: "/",
+  Home: "/home",
   Index: "/",
   Events: "/events",
+  Scratch: "/scratch",
+  ManageEvent: (id: string = ":id") => `/events/manage/${id}`,
   EventDetails: (id: string = ":id") => `/events/${id}`,
   CreateEvent: "/events/create",
 } as const;
