@@ -57,17 +57,19 @@ export default function EventListItem({ event }: Props) {
       </Segment>
       <Segment clearing>
         <Button
-          size="small"
+          size="tiny"
           color="red"
           floated="right"
           content="Delete"
+          icon="trash"
           onClick={() => dispatch(deleteEvent(event))}
         />
         <Button
           as={Link}
           to={AppRoutes.EventDetails(event.id)}
-          size="small"
+          size="tiny"
           color="teal"
+          icon="eye"
           floated="right"
           content="View"
         />
