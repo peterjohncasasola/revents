@@ -1,39 +1,46 @@
-import { sampleData } from "@/api/sampleData";
-import type { RootState } from "@/app/store";
-import type { AppEvent } from "@/types/event";
-import { createSlice } from "@reduxjs/toolkit";
+import type { RootState } from "@/app/store"
+import type { AppEvent } from "@/types/event"
+import { createSlice } from "@reduxjs/toolkit"
 
 type State = {
-    events: AppEvent[];
+  events: AppEvent[]
 }
 
 const initialState: State = {
-    events: sampleData,
+  events: []
 }
 
 const eventSlice = createSlice({
-    name: 'events',
-    initialState,
-    reducers: {
-        createEvent: ({events}, {payload}) => {
-            events.push(payload);
-        },
-       
-        deleteEvent: ({events}, {payload}) => {
-            const index = events.findIndex((event: AppEvent) => event.id === payload.id);
-            events.splice(index, 1);
-        },
+  name: "events",
+  initialState,
+  reducers: { 
+    createEvent: ({ events }, { payload }) => {
+      events.push(payload)
+    },
 
-        updateEvent: ({events}, {payload}) => {
-            const index = events.findIndex((event: AppEvent) => event.id === payload.id);
-            events[index] = payload;
-        }
+    setEvents: (state, { payload }) => {
+      state.events = payload
+    },
+
+    deleteEvent: ({ events }, { payload }) => {
+      const index = events.findIndex(
+        (event: AppEvent) => event.id === payload.id
+      )
+      events.splice(index, 1)
+    },
+
+    updateEvent: ({ events }, { payload }) => {
+      const index = events.findIndex(
+        (event: AppEvent) => event.id === payload.id
+      )
+      events[index] = payload
     }
+  }
 })
 
-
 export const selectEventById = (id: string | undefined) => (state: RootState) =>
-  state.events.events.find((event) => event.id === id);
-    
-export const { createEvent, deleteEvent, updateEvent } = eventSlice.actions;
-export default eventSlice;
+  state.events.events.find((event) => event.id === id)
+
+export const { createEvent, deleteEvent, updateEvent, setEvents } =
+  eventSlice.actions
+export default eventSlice
