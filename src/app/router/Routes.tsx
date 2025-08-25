@@ -22,7 +22,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: AppRoutes.CreateEvent,
-                element: <EventForm />,
+                element: <EventForm key="create" />,
             },
             {
                 path: AppRoutes.ManageEvent(),
