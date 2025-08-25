@@ -1,11 +1,13 @@
 import eventSlice from "@/features/events/eventSlice"
 import testSlice  from "@/features/events/scratch/testSlice"
 import { configureStore } from "@reduxjs/toolkit"
+import modalSlice from "@/common/modals/modalSlice"
 import { useDispatch, useSelector, type TypedUseSelectorHook } from "react-redux"   
 export const store = configureStore({
     reducer: {
         // Define your reducers here
         test: testSlice.reducer,
+        modal: modalSlice.reducer,
         events: eventSlice.reducer
     }
 })
