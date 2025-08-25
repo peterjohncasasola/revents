@@ -2,9 +2,7 @@ import { useAppDispatch, useAppSelector } from "@/app/store"
 import { type ReactNode } from "react"
 import { closeModal } from "./modalSlice"
 import {
-  Button,
   Modal,
-  ModalActions,
   ModalContent,
   ModalHeader,
   type ModalProps
@@ -27,17 +25,6 @@ export default function ModalWrapper({ children, header, ...props }: Props) {
     <Modal open={isOpen} onClose={handleClose} size={props.size}>
       {header && <ModalHeader>{header}</ModalHeader>}
       <ModalContent>{children}</ModalContent>
-      <ModalActions>
-        <Button color="black" onClick={handleClose} icon="close">
-          Cancel
-        </Button>
-        <Button
-          content="Save"
-          labelPosition="right"
-          icon="checkmark"
-          positive
-        />
-      </ModalActions>
     </Modal>
   )
 }
