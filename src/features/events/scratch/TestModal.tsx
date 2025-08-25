@@ -1,5 +1,5 @@
 import { useAppSelector } from "@/app/store"
-import ModalWrapper from "@/common/modals/modalWrapper"
+import ModalWrapper from "@/common/modals/ModalWrapper"
 
 export default function TestModal() {
   const { data } = useAppSelector((state) => state.modal)

@@ -1,8 +1,8 @@
-import TestModal from "@/features/events/scratch/TestModal"
+import LoginForm from "@/features/auth/LoginForm"
 import { useAppSelector } from "@/app/store"
 
 export default function ModalManager() {
-    const modalLookup = {TestModal}
+    const modalLookup = {LoginForm}
 
     const { type, data, isOpen } = useAppSelector((state) => state.modal)
 
