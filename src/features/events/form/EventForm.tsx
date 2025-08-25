@@ -13,7 +13,7 @@ import { selectEventById } from "../eventSlice";
 import { useAppDispatch, useAppSelector } from "@/app/store";
 import { useParams } from "react-router-dom";
 import { createEvent, updateEvent } from "../eventSlice";
-import { createId } from "@paralleldrive/cuid2";
+import { v4 as uuidv4 } from 'uuid';
 import { Controller, useForm, type FieldValues } from "react-hook-form";
 import { categoryOptions } from "./categoryOptions";
 
@@ -49,7 +49,7 @@ export default function EventForm() {
   const formTitle = id ? "Update Event" : "Create New Event";
 
   const onSubmit = (data: FieldValues) => {
-    const eventId = id ?? createId();
+    const eventId = id ?? uuidv4();
     if (!id) {
       // Create new event
       dispatch(
