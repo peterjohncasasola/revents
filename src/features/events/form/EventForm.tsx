@@ -1,27 +1,27 @@
-import { AppRoutes } from "@/app/router/AppRoutes";
-import type { AppEvent } from "@/types/event";
-import { useNavigate } from "react-router-dom";
+import { AppRoutes } from "@/app/router/AppRoutes"
+import type { AppEvent } from "@/types/event"
+import { useNavigate } from "react-router-dom"
 import {
   Button,
   Divider,
   Form,
   Header,
   Segment,
-  TextArea,
-} from "semantic-ui-react";
-import { selectEventById } from "../eventSlice";
-import { useAppDispatch, useAppSelector } from "@/app/store";
-import { useParams } from "react-router-dom";
-import { createEvent, updateEvent } from "../eventSlice";
-import { v4 as uuidv4 } from 'uuid';
-import { Controller, useForm, type FieldValues } from "react-hook-form";
-import { categoryOptions } from "./categoryOptions";
+  TextArea
+} from "semantic-ui-react"
+import { selectEventById } from "../eventSlice"
+import { useAppSelector } from "@/app/store"
+import { useParams } from "react-router-dom"
+import { v4 as uuidv4 } from "uuid"
+import { Controller, useForm } from "react-hook-form"
+import { categoryOptions } from "./categoryOptions"
+import { db } from "@/config/firebase"
+import { doc, updateDoc, setDoc } from "firebase/firestore"
 
 export default function EventForm() {
-  const { id } = useParams();
-  const dispatch = useAppDispatch();
-  const selectedEvent = useAppSelector(selectEventById(id));
-  const navigate = useNavigate();
+  const { id } = useParams()
+  const selectedEvent = useAppSelector(selectEventById(id))
+  const navigate = useNavigate()
 
   const initialValues = {
     id: "",
@@ -33,45 +33,65 @@ export default function EventForm() {
     venue: "",
     attendees: [],
     hostedBy: "",
-    hostPhotoURL: "",
-  };
+    hostPhotoURL: ""
+  }
 
   const {
     register,
     handleSubmit: handleFormSubmit,
     control,
-    formState: { errors, isValid, isSubmitting },
+    formState: { errors, isValid, isSubmitting }
   } = useForm<AppEvent>({
     defaultValues: selectedEvent ?? initialValues,
-    mode: "onTouched",
-  });
+    mode: "onTouched"
+  })
 
-  const formTitle = id ? "Update Event" : "Create New Event";
+  const formTitle = id ? "Update Event" : "Create New Event"
 
-  const onSubmit = (data: FieldValues) => {
-    const eventId = id ?? uuidv4();
-    if (!id) {
-      // Create new event
-      dispatch(
-        createEvent({
+  async function onSubmit(data: AppEvent) {
+    try {
+      if (!id) {
+        // Create new event
+        const newEvent = {
           ...data,
-          id: eventId,
+          id: uuidv4(),
           hostedBy: "Bob",
           attendees: [],
-          hostPhotoURL: "",
-        })
-      );
-    } else {
-      // Update existing event
-      dispatch(updateEvent({ ...selectedEvent, ...data }));
-    }
+          hostPhotoURL: ""
+        }
 
-    navigate(AppRoutes.EventDetails(eventId));
-  };
+        const eventRef = await createEvent(newEvent)
+        navigate(AppRoutes.EventDetails(eventRef.id))
+      } else {
+        // Update existing event
+        await updateEvent({ ...selectedEvent, ...data })
+        navigate(AppRoutes.EventDetails(id))
+      }
+    } catch (error) {
+      console.warn("Error creating/updating event:", error)
+    }
+  }
+
+  async function updateEvent(data: AppEvent | undefined) {
+    if (!data) return
+    const docRef = doc(db, "events", data.id)
+    await updateDoc(docRef, {
+      ...data
+    })
+
+    return docRef
+  }
+
+  async function createEvent(data: AppEvent) {
+    const docRef = doc(db, "events", data.id)
+    await setDoc(docRef, data)
+
+    return docRef
+  }
 
   const handleCancel = () => {
-    navigate(AppRoutes.Events);
-  };
+    navigate(AppRoutes.Events)
+  }
 
   return (
     <Segment clearing>
@@ -95,13 +115,15 @@ export default function EventForm() {
             <Form.Select
               placeholder="Category"
               {...field}
-              onChange={(_, data) => field.onChange(data.value, { shouldValidate: true })}
+              onChange={(_, data) =>
+                field.onChange(data.value, { shouldValidate: true })
+              }
               options={categoryOptions}
               error={errors.category && errors.category.message}
             />
           )}
         />
-        
+
         <Form.Field
           control={TextArea}
           placeholder="Description"
@@ -151,5 +173,5 @@ export default function EventForm() {
         />
       </Form>
     </Segment>
-  );
+  )
 }
