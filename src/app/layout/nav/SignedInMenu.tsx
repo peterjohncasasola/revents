@@ -7,9 +7,9 @@ import { Menu, Image, Dropdown } from "semantic-ui-react"
 export default function SignedInMenu() {
   const { currentUser } = useAppSelector((state) => state.auth)
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
   if (!currentUser) return null
 
-  const navigate = useNavigate()
 
   const handleSignOut = () => {
     dispatch(logout())
