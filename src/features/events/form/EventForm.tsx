@@ -17,6 +17,7 @@ import { Controller, useForm } from "react-hook-form"
 import { categoryOptions } from "./categoryOptions"
 import { db } from "@/config/firebase"
 import { doc, updateDoc, setDoc } from "firebase/firestore"
+import { toast } from "react-toastify"
 
 export default function EventForm() {
   const { id } = useParams()
@@ -67,8 +68,8 @@ export default function EventForm() {
         await updateEvent({ ...selectedEvent, ...data })
         navigate(AppRoutes.EventDetails(id))
       }
-    } catch (error) {
-      console.warn("Error creating/updating event:", error)
+    } catch (error: any) {
+      toast.error(`${error.message}`)
     }
   }
 

@@ -1,17 +1,19 @@
-import { Grid } from "semantic-ui-react";
-import EventDetailChat from "./EventDetailChat";
-import EventDetailHeader from "./EventDetailHeader";
-import EventDetailInfo from "./EventDetailInfo";
-import EventDetailSidebar from "./EventDetailSidebar";
-import { useParams } from "react-router-dom";
-import { selectEventById } from "../eventSlice";
-import { useAppSelector } from "@/app/store";
-  
-export default function EventDetailPage() {
-  const {id} = useParams();
-  const event = useAppSelector(selectEventById(id));
+import { Grid } from "semantic-ui-react"
+import EventDetailChat from "./EventDetailChat"
+import EventDetailHeader from "./EventDetailHeader"
+import EventDetailInfo from "./EventDetailInfo"
+import EventDetailSidebar from "./EventDetailSidebar"
+import { useParams } from "react-router-dom"
+import LoadingComponent from "@/app/layout/LoadingComponent"
+import { useEvent } from "@/app/hooks/useEvent"
 
-  if (!event) return <div>Event not found</div>
+export default function EventDetailPage() {
+  const { id } = useParams()
+  const { event, loading } = useEvent(id)
+
+  if (loading) return <LoadingComponent />
+
+  if (!id || !event) return <div>Event not found</div>
 
   return (
     <Grid>
