@@ -1,46 +1,33 @@
 import type { RootState } from "@/app/store"
+import {
+  createGenericSlice,
+  type GenericActions,
+  type GenericState
+} from "@/app/store/createGenericSlice"
 import type { AppEvent } from "@/types/event"
-import { createSlice } from "@reduxjs/toolkit"
+
 
 type State = {
-  events: AppEvent[]
+  data: AppEvent[]
 }
 
 const initialState: State = {
-  events: []
+  data: []
 }
 
-const eventSlice = createSlice({
+const eventSlice = createGenericSlice({
   name: "events",
-  initialState,
-  reducers: { 
-    createEvent: ({ events }, { payload }) => {
-      events.push(payload)
-    },
-
+  initialState: initialState as GenericState<AppEvent[]>,
+  reducers: {
     setEvents: (state, { payload }) => {
-      state.events = payload
+      state.data = payload
     },
-
-    deleteEvent: ({ events }, { payload }) => {
-      const index = events.findIndex(
-        (event: AppEvent) => event.id === payload.id
-      )
-      events.splice(index, 1)
-    },
-
-    updateEvent: ({ events }, { payload }) => {
-      const index = events.findIndex(
-        (event: AppEvent) => event.id === payload.id
-      )
-      events[index] = payload
-    }
   }
 })
 
 export const selectEventById = (id: string | undefined) => (state: RootState) =>
-  state.events.events.find((event) => event.id === id)
+  state.events.data.find((event) => event.id === id)  
 
-export const { createEvent, deleteEvent, updateEvent, setEvents } =
-  eventSlice.actions
+//Actions
+export const actions = eventSlice.actions as GenericActions<AppEvent[]>
 export default eventSlice
