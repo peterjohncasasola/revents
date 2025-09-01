@@ -45,7 +45,7 @@ export const createGenericSlice = <
         state.status = "failed"
       },
       reset(state) {
-        state.data = undefined
+        state.data = initialState.data as typeof state.data
         state.status = "idle"
         state.errors = undefined
       },
@@ -53,6 +53,12 @@ export const createGenericSlice = <
     }
   })
 }
+
+export const selectById =
+  <T extends { id: string | number }>(id: string | number) =>
+  (state: GenericState<T[]>) =>
+    state.data.find((item) => item.id === id)
+
 
 export type GenericActions<T> = {
   setError: ActionCreatorWithOptionalPayload<any, string>
