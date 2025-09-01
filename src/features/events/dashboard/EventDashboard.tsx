@@ -1,57 +1,27 @@
 import { Grid } from "semantic-ui-react"
 import EventList from "./EventList"
-import { useAppDispatch, useAppSelector } from "@/app/store"
-import { useEffect, useState } from "react"
-import {
-  collection,
-  onSnapshot,
-  query
-} from "firebase/firestore"
-import { db } from "@/config/firebase"
-import type { AppEvent } from "@/types/event"
-import { setEvents } from "../eventSlice"
+import { useAppSelector } from "@/app/store"
+import { useEffect } from "react"
 import LoadingComponent from "@/app/layout/LoadingComponent"
+import { actions } from "../eventSlice"
+import { useFirestore } from "@/app/hooks/useFirestore"
 
 export default function EventDashboard() {
-  const {events} = useAppSelector((state) => state.events)
-  const [isLoading, setIsLoading] = useState(true)
+    const { data : events, status } = useAppSelector((state) => state.events)
+    const { loadCollection } = useFirestore('events')
 
-  const dispatch = useAppDispatch()
+    useEffect(() => {
+      loadCollection(actions)
+    }, [loadCollection])
 
-  useEffect(() => {
-    const q = query(collection(db, "events"))
-    const unsubscribe = onSnapshot(q, {
-      next: (querySnapshot) => {
-        const eventDocs: AppEvent[] = []
-        querySnapshot.forEach((doc) => {
-          eventDocs.push({ id: doc.id, ...doc.data() } as AppEvent)
-        })
-        
-        dispatch(setEvents(eventDocs))
-        setIsLoading(false)
-      },
-      error: (err) => {
-        console.error("Error fetching events: ", err)
-        setIsLoading(false)
-      },
-      complete: () => {
-        console.log("Event fetching complete")
-        setIsLoading(false)
-      }
-    })
+    if (status === 'loading') return <LoadingComponent />
 
-    return () => unsubscribe()
-
-  }, [dispatch])
-
-  if (isLoading) return <LoadingComponent />
-
-  return (
-    <Grid>
-      <Grid.Column width={10}>
-        <EventList events={events} />
-      </Grid.Column>
-      <Grid.Column width={6}></Grid.Column>
-    </Grid>
-  )
+    return (
+      <Grid>
+        <Grid.Column width={10}>
+          <EventList events={events} />
+        </Grid.Column>
+        <Grid.Column width={6}></Grid.Column>
+      </Grid>
+    )
 }
