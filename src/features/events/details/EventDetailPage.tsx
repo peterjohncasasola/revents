@@ -5,13 +5,27 @@ import EventDetailInfo from "./EventDetailInfo"
 import EventDetailSidebar from "./EventDetailSidebar"
 import { useParams } from "react-router-dom"
 import LoadingComponent from "@/app/layout/LoadingComponent"
-import { useEvent } from "@/app/hooks/useEvent"
+import { useFirestore } from "@/app/hooks/useFirestore"
+import { actions } from "../eventSlice"
+import { useEffect } from "react"
+import { useAppSelector } from "@/app/store"
+import type { AppEvent } from "@/types/event"
+import { selectById } from "@/app/store/createGenericSlice"
 
 export default function EventDetailPage() {
   const { id } = useParams()
-  const { event, loading } = useEvent(id)
+  const key: string = "events"
+  const { status } = useAppSelector((state) => state.events)
+  const event = useAppSelector((state) => selectById<AppEvent>(id!)(state.events))
+  const { loadDocument } = useFirestore(key)
 
-  if (loading) return <LoadingComponent />
+  useEffect(() => {
+    if (id) {
+      loadDocument(id, actions)
+    }
+  }, [loadDocument, id])
+
+  if (status === "loading") return <LoadingComponent />
 
   if (!id || !event) return <div>Event not found</div>
 
