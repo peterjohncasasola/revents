@@ -11,26 +11,20 @@ import EventListAttendee from "./EventListAttendee";
 import type { AppEvent, Attendee } from "types/event";
 import { Link } from "react-router-dom";
 import { AppRoutes } from "@/app/router/AppRoutes";
+import { useFirestore } from '@/app/hooks/useFirestore';
 import { useState } from "react";
-import { deleteDoc, doc } from "firebase/firestore";
-import { db } from "@/config/firebase";
 
 type Props = {
   event: AppEvent;
 };
 
 export default function EventListItem({ event }: Props) {
+  const { deleteDocument } = useFirestore("events");
   const [loading, setLoading] = useState(false);
-
   async function removeEvent() {
     setLoading(true);
-    try {
-      await deleteDoc(doc(db, 'events', event.id));
-    } catch (error) {
-      console.error("Error removing event:", error);
-    } finally {
-      setLoading(false);
-    }
+    await deleteDocument(event.id);
+    setLoading(false);
   }
 
   return (
