@@ -9,22 +9,40 @@ import {
   Segment,
   TextArea
 } from "semantic-ui-react"
-import { selectEventById } from "../eventSlice"
+import { actions } from "../eventSlice"
 import { useAppSelector } from "@/app/store"
 import { useParams } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
 import { Controller, useForm } from "react-hook-form"
 import { categoryOptions } from "./categoryOptions"
-import { db } from "@/config/firebase"
-import { doc, updateDoc, setDoc } from "firebase/firestore"
 import { toast } from "react-toastify"
+import { useFirestore } from "@/app/hooks/useFirestore"
+import { useEffect } from "react"
+import LoadingComponent from "@/app/layout/LoadingComponent"
+import { selectById } from "@/app/store/createGenericSlice"
 
 export default function EventForm() {
   const { id } = useParams()
-  const selectedEvent = useAppSelector(selectEventById(id))
   const navigate = useNavigate()
+  const { status } = useAppSelector((state) => state.events)
+  const selectedEvent = useAppSelector((state) =>
+    selectById<AppEvent>(id!)(state.events)
+  )
+  const { loadDocument, updateDocument, createDocument } =
+    useFirestore("events")
 
-  const initialValues = {
+  useEffect(() => {
+    if (!id) {
+      return
+    }
+    const loadEvent = async () => {
+      await loadDocument(id, actions)
+    }
+
+    loadEvent()
+  }, [id, loadDocument])
+
+  const initialValues: AppEvent = {
     id: "",
     title: "",
     category: "",
@@ -41,17 +59,25 @@ export default function EventForm() {
     register,
     handleSubmit: handleFormSubmit,
     control,
+    reset,
     formState: { errors, isValid, isSubmitting }
   } = useForm<AppEvent>({
-    defaultValues: selectedEvent ?? initialValues,
+    defaultValues: initialValues,
     mode: "onTouched"
   })
+
+  // Reset form when selectedEvent changes
+  useEffect(() => {
+    if (selectedEvent) {
+      reset(selectedEvent)
+    }
+  }, [selectedEvent, reset])
 
   const formTitle = id ? "Update Event" : "Create New Event"
 
   async function onSubmit(data: AppEvent) {
     try {
-      if (!id) {
+      if (!selectedEvent) {
         // Create new event
         const newEvent = {
           ...data,
@@ -62,7 +88,9 @@ export default function EventForm() {
         }
 
         const eventRef = await createEvent(newEvent)
-        navigate(AppRoutes.EventDetails(eventRef.id))
+        if (eventRef) {
+          navigate(AppRoutes.EventDetails(eventRef.id))
+        }
       } else {
         // Update existing event
         await updateEvent({ ...selectedEvent, ...data })
@@ -73,26 +101,22 @@ export default function EventForm() {
     }
   }
 
-  async function updateEvent(data: AppEvent | undefined) {
+  async function updateEvent(data: AppEvent) {
     if (!data) return
-    const docRef = doc(db, "events", data.id)
-    await updateDoc(docRef, {
-      ...data
-    })
-
-    return docRef
+    await updateDocument(data.id, data)
   }
 
   async function createEvent(data: AppEvent) {
-    const docRef = doc(db, "events", data.id)
-    await setDoc(docRef, data)
-
-    return docRef
+    if (!data) return
+    const eventRef = await createDocument(data)
+    return eventRef
   }
 
   const handleCancel = () => {
     navigate(AppRoutes.Events)
   }
+
+  if (status === "loading") return <LoadingComponent />
 
   return (
     <Segment clearing>
