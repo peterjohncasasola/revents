@@ -3,18 +3,22 @@ import { useAppDispatch } from "@/app/store"
 import type { GenericActions } from "@/app/store/createGenericSlice"
 import {
   collection,
+  deleteDoc,
   doc,
   onSnapshot,
+  setDoc,
+  updateDoc,
   type DocumentData
 } from "firebase/firestore"
 import { db } from "@/config/firebase"
+import { toast } from "react-toastify"
 
 type ListenerState = {
   name?: string
   unsubscribe: () => void
 }
 
-export const useFirestore = <T>(path: string) => {
+export const useFirestore = <T extends DocumentData>(path: string) => {
   const listenersRef = useRef<ListenerState[]>([])
   const dispatch = useAppDispatch()
 
@@ -90,5 +94,39 @@ export const useFirestore = <T>(path: string) => {
     [dispatch, path]
   )
 
-  return { loadCollection, loadDocument }
+  const createDocument = async (data: T) => {
+    try {
+      const ref = doc(db, path, data.id)
+      await setDoc(ref, data)
+      return ref
+    } catch (error) {
+      toast.error(`Error creating document: ${(error as Error).message}`)
+    }
+  }
+
+  const updateDocument = async (id: string, data: T) => {
+    try {
+      const ref = doc(db, path, id)
+      return await updateDoc(ref, { ...data })
+    } catch (error: any) {
+      toast.error(`Error updating document: ${(error as Error).message}`)
+    }
+  }
+
+  const deleteDocument = async (id: string) => {
+    try {
+      const ref = doc(db, path, id)
+      return await deleteDoc(ref)
+    } catch (error: any) {
+      toast.error(`Error deleting document: ${(error as Error).message}`)
+    }
+  }
+
+  return {
+    loadCollection,
+    loadDocument,
+    createDocument,
+    updateDocument,
+    deleteDocument
+  }
 }
