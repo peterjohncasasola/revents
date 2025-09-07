@@ -11,13 +11,13 @@ import { useEffect } from "react"
 import { useAppSelector } from "@/app/store"
 import type { AppEvent } from "@/types/event"
 import { selectById } from "@/app/store/createGenericSlice"
+import { FirestoreCollections } from "@/config/firestoreCollections"
 
 export default function EventDetailPage() {
   const { id } = useParams()
-  const key: string = "events"
   const { status } = useAppSelector((state) => state.events)
   const event = useAppSelector((state) => selectById<AppEvent>(id!)(state.events))
-  const { loadDocument } = useFirestore(key)
+  const { loadDocument } = useFirestore(FirestoreCollections.Events)
 
   useEffect(() => {
     if (id) {

@@ -10,9 +10,10 @@ import { toast } from "react-toastify"
 import { useFirestore } from "@/app/hooks/useFirestore"
 import { Timestamp } from "firebase/firestore"
 import SocialAuth from "./SocialAuth"
+import { FirestoreCollections } from "@/config/firestoreCollections"
 
 export default function RegisterForm() {
-  const { setDocument } = useFirestore("userProfiles")
+  const { setDocument } = useFirestore(FirestoreCollections.UserProfiles)
   const {
     register,
     handleSubmit,

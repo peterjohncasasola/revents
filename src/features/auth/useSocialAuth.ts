@@ -13,6 +13,7 @@ import {
   type AuthProvider
 } from "firebase/auth"
 import type { ProviderConfig } from "@/types/socialAuth"
+import { FirestoreCollections } from "@/config/firestoreCollections"
 
 
 export const providers: ProviderConfig[] = [
@@ -39,7 +40,7 @@ export const providers: ProviderConfig[] = [
   }
 ]
 export function useSocialAuth() {
-  const { setDocument } = useFirestore("userProfiles")
+  const { setDocument } = useFirestore(FirestoreCollections.UserProfiles)
   const dispatch = useAppDispatch()
 
   const loginWithProvider = async (provider: AuthProvider) => {

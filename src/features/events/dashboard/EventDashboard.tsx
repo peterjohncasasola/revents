@@ -5,10 +5,11 @@ import { useEffect } from "react"
 import LoadingComponent from "@/app/layout/LoadingComponent"
 import { actions } from "../eventSlice"
 import { useFirestore } from "@/app/hooks/useFirestore"
+import { FirestoreCollections } from "@/config/firestoreCollections"
 
 export default function EventDashboard() {
     const { data : events, status } = useAppSelector((state) => state.events)
-    const { loadCollection } = useFirestore('events')
+    const { loadCollection } = useFirestore(FirestoreCollections.Events)
 
     useEffect(() => {
       loadCollection(actions)
