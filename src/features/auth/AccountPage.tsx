@@ -4,6 +4,9 @@ import { Button, Form, Header, Icon, Segment } from "semantic-ui-react"
 import { providers } from "./authProviders"
 import { useAppSelector } from "@/app/store"
 import { useEffect } from "react"
+import { auth } from "@/config/firebase"
+import { updatePassword } from "firebase/auth"
+import { toast } from "react-toastify"
 
 export default function AccountPage() {
   const { currentUser } = useAppSelector((state) => state.auth)
@@ -22,8 +25,15 @@ export default function AccountPage() {
   const password = watch("password")
   const confirmPassword = watch("confirmPassword")
 
-  const onSubmit = (data: FieldValues) => {
-    console.log("Form submitted:", data)
+  const onSubmit = async (data: FieldValues) => {
+    try {
+      if (auth.currentUser) {
+        await updatePassword(auth.currentUser, data.password)
+        toast.success('Password updated successfully')
+      }
+    } catch (error: any) {
+      toast.error(error.message)
+    }
   }
 
   useEffect(() => {
