@@ -12,7 +12,7 @@ import { useFirestore } from "@/app/hooks/useFirestore"
 export function useEventForm() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { status } = useAppSelector((state) => state.events)
+  const { status, errors } = useAppSelector((state) => state.events)
   const selectedEvent = useAppSelector((state) =>
     id ? selectById<AppEvent>(id)(state.events) : undefined
   )
@@ -23,6 +23,12 @@ export function useEventForm() {
   useEffect(() => {
     if (id) loadDocument(id, actions)
   }, [id, loadDocument])
+
+  useEffect(() => {
+    if (errors) {
+      toast.error(typeof errors === "string" ? errors : errors.message)
+    }
+  }, [errors])
 
   const handleCancel = () => navigate(AppRoutes.Events)
 
