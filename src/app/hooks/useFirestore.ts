@@ -122,11 +122,23 @@ export const useFirestore = <T extends DocumentData>(path: string) => {
     }
   }
 
+  const setDocument = async (id: string, data: any) => {
+    try {
+      const ref = doc(db, path, id)
+      await setDoc(ref, data)
+      return ref
+    } catch (error) {
+      console.warn(error)
+      toast.error(`Error: ${(error as Error).message}`)
+    }
+  }
+
   return {
     loadCollection,
     loadDocument,
     createDocument,
     updateDocument,
+    setDocument,
     deleteDocument
   }
 }
