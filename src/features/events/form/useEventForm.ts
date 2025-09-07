@@ -31,7 +31,7 @@ export function useEventForm() {
     }
   }, [errors])
 
-  const handleCancel = () => navigate(AppRoutes.Events)
+  const handleCancel = () => navigate(-1)
 
   const isEditing = Boolean(id && selectedEvent)
   const [isSaving, setIsSaving] = useState(false)
