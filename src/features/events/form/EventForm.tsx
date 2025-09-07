@@ -19,6 +19,7 @@ export default function EventForm() {
     formTitle,
     selectedEvent,
     handleCancel,
+    handleCancelToggle,
     handleSubmit
   } = useEventForm()
 
@@ -117,6 +118,18 @@ export default function EventForm() {
           {...register("date", { required: "Date is required" })}
           error={errors.date && errors.date.message}
         />
+
+        {selectedEvent && (
+          <Button
+            type="button"
+            floated="left"
+            color={selectedEvent.isCancelled ? "green" : "red"}
+            onClick={() => handleCancelToggle(selectedEvent)}
+            content={
+              selectedEvent.isCancelled ? "Reactivate event" : "Cancel event"
+            }
+          />
+        )}
 
         <Button
           loading={isSubmitting}

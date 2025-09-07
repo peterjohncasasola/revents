@@ -11,6 +11,7 @@ import { useFirestore } from "@/app/hooks/useFirestore"
 
 export function useEventForm() {
   const { id } = useParams()
+  const defaultErrorMessage = "An unexpected error occurred"
   const navigate = useNavigate()
   const { status, errors } = useAppSelector((state) => state.events)
   const selectedEvent = useAppSelector((state) =>
@@ -54,7 +55,17 @@ export function useEventForm() {
         if (eventRef) navigate(AppRoutes.EventDetails(eventRef.id))
       }
     } catch (error: any) {
-      toast.error(error.message || "Something went wrong")
+      toast.error(error.message || defaultErrorMessage)
+    }
+  }
+
+  const handleCancelToggle = async (event: AppEvent) => {
+    try {
+      await updateDocument(event.id, { isCancelled: !event.isCancelled })
+      const message = event.isCancelled ? "reactivated" : "cancelled"
+      toast.success(`Event has been ${message} successfully`)
+    } catch (error: any) {
+      toast.error(error.message || defaultErrorMessage)
     }
   }
 
@@ -65,6 +76,7 @@ export function useEventForm() {
     selectedEvent,
     handleCancel,
     formTitle,
+    handleCancelToggle,
     handleSubmit
   }
 }
