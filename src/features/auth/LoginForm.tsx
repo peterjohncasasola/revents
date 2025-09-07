@@ -2,11 +2,12 @@ import { useAppDispatch } from "@/app/store"
 import { closeModal } from "@/common/modals/modalSlice"
 import ModalWrapper from "@/common/modals/ModalWrapper"
 import { useForm, type FieldValues } from "react-hook-form"
-import { Button, Form } from "semantic-ui-react"
+import { Button, Divider, Form } from "semantic-ui-react"
 import { login } from "./authSlice"
 import { auth } from "@/config/firebase"
 import { signInWithEmailAndPassword } from "firebase/auth"
 import { toast } from "react-toastify"
+import SocialAuth from "./SocialAuth"
 
 export default function LoginForm() {
   const {
@@ -31,7 +32,7 @@ export default function LoginForm() {
   }
 
   return (
-    <ModalWrapper header="Sign into re-vents" size="tiny">
+    <ModalWrapper header="Sign into re-vents" size="mini">
       <Form onSubmit={handleSubmit(onSubmit)} autoComplete="off">
         <Form.Input
           defaultValue=""
@@ -64,6 +65,8 @@ export default function LoginForm() {
           color="teal"
           content="Login"
         />
+        <Divider horizontal>Or</Divider>
+        <SocialAuth isSignup={false}/>
       </Form>
     </ModalWrapper>
   )

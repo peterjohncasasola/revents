@@ -2,13 +2,14 @@ import { useAppDispatch } from "@/app/store"
 import { closeModal } from "@/common/modals/modalSlice"
 import ModalWrapper from "@/common/modals/ModalWrapper"
 import { useForm, type FieldValues } from "react-hook-form"
-import { Button, Form } from "semantic-ui-react"
+import { Button, Divider, Form } from "semantic-ui-react"
 import { login } from "./authSlice"
 import { auth } from "@/config/firebase"
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth"
 import { toast } from "react-toastify"
 import { useFirestore } from "@/app/hooks/useFirestore"
 import { Timestamp } from "firebase/firestore"
+import SocialAuth from "./SocialAuth"
 
 export default function RegisterForm() {
   const { setDocument } = useFirestore("userProfiles")
@@ -87,6 +88,9 @@ export default function RegisterForm() {
           color="teal"
           content="Register"
         />
+
+        <Divider horizontal>Or</Divider>
+        <SocialAuth isSignup={true}/>
       </Form>
     </ModalWrapper>
   )
