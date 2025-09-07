@@ -4,6 +4,9 @@ import ModalWrapper from "@/common/modals/ModalWrapper"
 import { useForm, type FieldValues } from "react-hook-form"
 import { Button, Form } from "semantic-ui-react"
 import { login } from "./authSlice"
+import { auth } from "@/config/firebase"
+import { signInWithEmailAndPassword } from "firebase/auth"
+import { toast } from "react-toastify"
 
 export default function LoginForm() {
   const {
@@ -17,9 +20,14 @@ export default function LoginForm() {
 
   const dispatch = useAppDispatch()
 
-  const onSubmit = (data: FieldValues) => {
-    dispatch(login(data))
+  const onSubmit = async (data: FieldValues) => {
+    try {
+      const result = await signInWithEmailAndPassword(auth, data.email, data.password);
+      dispatch(login(result.user))
     dispatch(closeModal())
+    } catch (error) {
+      toast.error("Invalid email or password")
+    }
   }
 
   return (
