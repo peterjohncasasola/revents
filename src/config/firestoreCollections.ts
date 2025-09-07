@@ -3,4 +3,4 @@ export const FirestoreCollections = {
   UserProfiles: "userProfiles",
   Attendees: "attendees",
   Users: "users",
-}
+} as const
