@@ -29,6 +29,7 @@ export function useSocialAuth() {
           isAdmin: false,
           userId: user.uid,
           photoURL: user.photoURL,
+          providerId: provider.providerId,
           createdAt: Timestamp.now()
         })
       }
