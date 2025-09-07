@@ -1,8 +1,9 @@
 import { useForm, type FieldValues } from "react-hook-form"
 import { Link } from "react-router-dom"
-import { Button, Form, Header, Icon, Segment, Message } from "semantic-ui-react"
+import { Button, Form, Header, Icon, Segment } from "semantic-ui-react"
 import { providers } from "./authProviders"
 import { useAppSelector } from "@/app/store"
+import { useEffect } from "react"
 
 export default function AccountPage() {
   const { currentUser } = useAppSelector((state) => state.auth)
@@ -10,14 +11,24 @@ export default function AccountPage() {
   const {
     register,
     handleSubmit,
+    getValues: formValues,
+    trigger,
+    watch,
     formState: { errors, isSubmitting, isValid }
   } = useForm({
     mode: "onTouched"
   })
 
+  const password = watch("password")
+  const confirmPassword = watch("confirmPassword")
+
   const onSubmit = (data: FieldValues) => {
     console.log("Form submitted:", data)
   }
+
+  useEffect(() => {
+    if (confirmPassword) trigger("confirmPassword")
+  }, [confirmPassword, trigger, password])
 
   return (
     <Segment>
@@ -31,11 +42,15 @@ export default function AccountPage() {
         errors={errors}
         isSubmitting={isSubmitting}
         isValid={isValid}
+        formValues={formValues}
       />
 
       {/* External provider section */}
       {providers
-        .filter((provider) => currentUser?.providerId === provider.link.replace("https://", ""))
+        .filter(
+          (provider) =>
+            currentUser?.providerId === provider.link.replace("https://", "")
+        )
         .map((provider) => (
           <ProviderSettings key={provider.name} {...provider} />
         ))}
@@ -45,7 +60,15 @@ export default function AccountPage() {
 
 /* --- Subcomponents --- */
 
-function PasswordForm({ register, handleSubmit, onSubmit, errors, isSubmitting, isValid }: any) {
+function PasswordForm({
+  register,
+  handleSubmit,
+  onSubmit,
+  errors,
+  isSubmitting,
+  isValid,
+  formValues
+}: any) {
   return (
     <div>
       <Header color="teal" sub content="Change password" />
@@ -56,21 +79,27 @@ function PasswordForm({ register, handleSubmit, onSubmit, errors, isSubmitting, 
           label="Password"
           type="password"
           placeholder="Password"
-          {...register("password", { required: "Password is required" })}
-          error={
-            errors.password && <Message error content={errors.password.message} />
-          }
+          {...register("password", { required: true })}
+          error={errors.password && "Password is required"}
         />
 
         <Form.Input
           label="Confirm Password"
           type="password"
           placeholder="Confirm Password"
-          {...register("confirmPassword", { required: "Confirm Password is required" })}
+          {...register("confirmPassword", {
+            required: true,
+            validate: {
+              passwordMatch: (value: any) =>
+                value === formValues().password ||
+                "Password and confirm password do not match"
+            }
+          })}
           error={
-            errors.confirmPassword && (
-              <Message error content={errors.confirmPassword.message} />
-            )
+            (errors.confirmPassword?.type === "required" &&
+              "Confirm Password is required") ||
+            (errors.confirmPassowrd?.type === "passwordMatch" &&
+              errors.confirmPassword?.message)
           }
         />
 
