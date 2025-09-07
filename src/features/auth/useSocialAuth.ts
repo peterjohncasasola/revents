@@ -6,39 +6,11 @@ import { auth } from "@/config/firebase"
 import { Timestamp } from "firebase/firestore"
 import { toast } from "react-toastify"
 import {
-  FacebookAuthProvider,
-  GithubAuthProvider,
-  GoogleAuthProvider,
   signInWithPopup,
   type AuthProvider
 } from "firebase/auth"
-import type { ProviderConfig } from "@/types/socialAuth"
 import { FirestoreCollections } from "@/config/firestoreCollections"
 
-
-export const providers: ProviderConfig[] = [
-  {
-    name: "facebook",
-    provider: new FacebookAuthProvider(),
-    color: "blue",
-    icon: "facebook",
-    label: "Facebook"
-  },
-  {
-    name: "google",
-    provider: new GoogleAuthProvider(),
-    color: "red",
-    icon: "google",
-    label: "Google"
-  },
-  {
-    name: "github",
-    provider: new GithubAuthProvider(),
-    color: "black",
-    icon: "github",
-    label: "Github"
-  }
-]
 export function useSocialAuth() {
   const { setDocument } = useFirestore(FirestoreCollections.UserProfiles)
   const dispatch = useAppDispatch()
