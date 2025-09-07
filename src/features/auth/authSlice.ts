@@ -1,9 +1,9 @@
-import type { User } from "@/types/user"
+import type { AppUser } from "@/types/user"
 import { createSlice } from "@reduxjs/toolkit"
 
 type State = {
     isAuthenticated: boolean
-    currentUser: User | null
+    currentUser: AppUser | null
 }
 
 const initialState: State = {
