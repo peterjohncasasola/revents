@@ -13,7 +13,6 @@ export const useAuthListener = () => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         dispatch(login(user))
-        navigate(AppRoutes.Events)
       } else {
         dispatch(logout())
         navigate(AppRoutes.Home)
