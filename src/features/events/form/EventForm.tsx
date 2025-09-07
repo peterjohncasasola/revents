@@ -19,6 +19,7 @@ export default function EventForm() {
     formTitle,
     selectedEvent,
     handleCancel,
+    isSaving,
     handleCancelToggle,
     handleSubmit
   } = useEventForm()
@@ -123,6 +124,7 @@ export default function EventForm() {
           <Button
             type="button"
             floated="left"
+            loading={isSaving}
             color={selectedEvent.isCancelled ? "green" : "red"}
             onClick={() => handleCancelToggle(selectedEvent)}
             content={

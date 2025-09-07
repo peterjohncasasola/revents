@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { v4 as uuidv4 } from "uuid"
 import { toast } from "react-toastify"
@@ -34,6 +34,7 @@ export function useEventForm() {
   const handleCancel = () => navigate(AppRoutes.Events)
 
   const isEditing = Boolean(id && selectedEvent)
+  const [isSaving, setIsSaving] = useState(false)
   const formTitle = isEditing ? "Update Event" : "Create New Event"
 
   const handleSubmit = async (data: AppEvent) => {
@@ -61,11 +62,14 @@ export function useEventForm() {
 
   const handleCancelToggle = async (event: AppEvent) => {
     try {
+      setIsSaving(true)
       await updateDocument(event.id, { isCancelled: !event.isCancelled })
       const message = event.isCancelled ? "reactivated" : "cancelled"
       toast.success(`Event has been ${message} successfully`)
     } catch (error: any) {
       toast.error(error.message || defaultErrorMessage)
+    } finally {
+      setIsSaving(false)
     }
   }
 
@@ -75,6 +79,7 @@ export function useEventForm() {
     isEditing,
     selectedEvent,
     handleCancel,
+    isSaving,
     formTitle,
     handleCancelToggle,
     handleSubmit
