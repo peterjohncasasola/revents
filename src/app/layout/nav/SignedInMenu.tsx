@@ -33,6 +33,11 @@ export default function SignedInMenu() {
             icon="plus"
           />
           <Dropdown.Item text="My profile" icon="user" />
+          <Dropdown.Item
+            text="My Account"
+            icon="settings"
+            onClick={() => navigate(AppRoutes.Account)}
+          />
           <Dropdown.Item text="Signout" icon="power" onClick={handleSignOut} />
         </Dropdown.Menu>
       </Dropdown>
