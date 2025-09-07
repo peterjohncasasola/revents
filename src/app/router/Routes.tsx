@@ -6,6 +6,7 @@ import HomePage from "@/features/events/home/HomePage"
 import EventForm from "@/features/events/form/EventForm"
 import { AppRoutes } from "./AppRoutes"
 import Scratch from "@/features/events/scratch/Scratch"
+import AccountPage from "@/features/auth/AccountPage"
 
 export const router = createBrowserRouter([
     {
@@ -35,6 +36,10 @@ export const router = createBrowserRouter([
             {
                 path: AppRoutes.Home,
                 element: <HomePage />,
+            },
+            {
+                path: AppRoutes.Account,
+                element: <AccountPage />,
             },
         ]
     }
