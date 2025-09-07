@@ -7,8 +7,11 @@ import { login } from "./authSlice"
 import { auth } from "@/config/firebase"
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth"
 import { toast } from "react-toastify"
+import { useFirestore } from "@/app/hooks/useFirestore"
+import { Timestamp } from "firebase/firestore"
 
 export default function RegisterForm() {
+  const { setDocument } = useFirestore("userProfiles")
   const {
     register,
     handleSubmit,
@@ -27,6 +30,14 @@ export default function RegisterForm() {
         data.password
       )
       await updateProfile(createdUser.user, { displayName: data.displayName })
+      await setDocument(createdUser.user.uid, {
+        displayName: data.displayName,
+        email: data.email,
+        isAdmin: false,
+        userId: createdUser.user.uid,
+        createdAt: Timestamp.now()
+      })
+
       dispatch(login(createdUser.user))
       dispatch(closeModal())
     } catch (error) {
