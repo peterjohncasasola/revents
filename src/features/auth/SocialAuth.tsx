@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { toast } from "react-toastify"
-import { Button, Icon } from "semantic-ui-react"
+import { Button, Icon, type SemanticCOLORS } from "semantic-ui-react"
 import { useSocialAuth } from "./useSocialAuth"
 import {
   providers,
@@ -49,7 +49,7 @@ export default function SocialAuth({ isSignup }: Props) {
         <Button
           key={config.name}
           fluid
-          color={config.color}
+          color={config.color as SemanticCOLORS}
           type="button"
           loading={loadingProvider === config.name}
           style={{ marginTop: ".5em" }}

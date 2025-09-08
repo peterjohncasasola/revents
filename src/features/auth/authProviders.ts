@@ -5,38 +5,34 @@ import {
   type AuthProvider
 } from "firebase/auth"
 
-import {
-  type SemanticCOLORS,
-  type SemanticICONS
-} from "semantic-ui-react"
+import { type SemanticICONS } from "semantic-ui-react"
 
-export type ProviderName = "facebook" | "google" | "github"
+export type ProviderName = "facebook" | "google" | "github" | "twitter"
 
 export interface ProviderConfig {
   name: ProviderName
   provider: AuthProvider
-  color: SemanticCOLORS
+  color: string
   icon: SemanticICONS
   label: string
   link: string
 }
 
-
 export const providers: ProviderConfig[] = [
   {
     name: "facebook",
     provider: new FacebookAuthProvider(),
-    color: "blue",
+    color: "facebook",
     icon: "facebook",
-    link: 'https://facebook.com',
+    link: "https://facebook.com",
     label: "Facebook"
   },
   {
     name: "google",
     provider: new GoogleAuthProvider(),
-    color: "red",
+    color: "google plus",
     icon: "google",
-    link: 'https://google.com',
+    link: "https://google.com",
     label: "Google"
   },
   {
@@ -44,7 +40,7 @@ export const providers: ProviderConfig[] = [
     provider: new GithubAuthProvider(),
     color: "black",
     icon: "github",
-    link: 'https://github.com',
+    link: "https://github.com",
     label: "Github"
   }
 ]
